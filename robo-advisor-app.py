@@ -1,10 +1,25 @@
 # app/robo_advisor.py
+investing = True 
 
+import datetime
+
+while investing: 
+
+    try: 
+        company_stock = input("Please input the stock symbol for a company of your choice: ")
+        
+        if len(company_stock) == 4:
+            break 
+        else:
+            print("Error, please enter a valid stock symbol") 
+    except ValueError:
+        print("Error, please enter a valid stock")
+    
 print("-------------------------")
-print("SELECTED SYMBOL: XYZ")
+print("SELECTED SYMBOL:", company_stock)
 print("-------------------------")
 print("REQUESTING STOCK MARKET DATA...")
-print("REQUEST AT: 2018-02-20 02:00pm")
+print("REQUEST AT:", datetime.datetime.now())
 print("-------------------------")
 print("LATEST DAY: 2018-02-20")
 print("LATEST CLOSE: $100,000.00")
