@@ -49,10 +49,15 @@ load_dotenv() #> loads contents of the .env file into the script's environment
 API_KEY = os.environ.get("ALPHAVANTAGE_API_KEY") # default to using the "demo" key if an Env Var is not supplied
 
     
-csv_file_path = os.path.join(os.path.dirname(__file__), "..", "data", "prices.csv") #modify file path with name of requested stock
+csv_file_path = os.path.join(os.path.dirname(__file__),"data", "prices.csv") #modify file path with name of requested stock
+
+#csv_headers = ["timestamp", "open", "high", "low", "close", "volume"]
 
 with open(csv_file_path, "w") as csv_file:
-    writer = csv.DictWriter(csv_file, fieldnames=[])
+    writer = csv.DictWriter(csv_file, fieldnames=["timestamp", "open", "high", "low", "close", "volume"])
+    writer.writeheader()
+    for date in dates: 
+        writer.writerow({"timestamp": date, "open": "TODO", "high": "TODO", "low": "TODO", "close": "TODO", "volume": "TODO"})
 
 print("------------------------")
 print("SELECTED SYMBOL: MSFT")
