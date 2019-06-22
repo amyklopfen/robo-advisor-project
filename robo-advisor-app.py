@@ -9,7 +9,13 @@ import os
 
 from dotenv import load_dotenv
 import requests
-requests_url = "https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=MSFT&apikey=demo"
+
+load_dotenv() #> loads contents of the .env file into the script's environment
+
+api_key = os.environ.get("ALPHAVANTAGE_API_KEY") # default to using the "demo" key if an Env Var is not supplied
+symbol = input("Please enter a stock symbol to get started: ")
+
+requests_url = f"https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol={symbol}&apikey={api_key}"
 
 response = requests.get(requests_url)
 
@@ -29,7 +35,7 @@ dates = list(date_keys)
 latest_day = dates[0]
 
 last_refreshed = parsed_response["Meta Data"]["3. Last Refreshed"]
-#breakpoint()
+
 latest_close = tsd[latest_day]["4. close"]
 
 high_prices = []
@@ -44,10 +50,6 @@ for date in dates:
 recent_high = max(high_prices)
 recent_low = min(low_prices)
 
-load_dotenv() #> loads contents of the .env file into the script's environment
-
-API_KEY = os.environ.get("ALPHAVANTAGE_API_KEY") # default to using the "demo" key if an Env Var is not supplied
-
     
 csv_file_path = os.path.join(os.path.dirname(__file__),"data", "prices.csv") #modify file path with name of requested stock
 
@@ -61,7 +63,7 @@ with open(csv_file_path, "w") as csv_file:
         writer.writerow({"timestamp": date, "open": daily_prices["1. open"], "high": daily_prices["2. high"], "low": daily_prices["3. low"], "close": daily_prices["4. close"], "volume": daily_prices["5. volume"]})
 
 print("------------------------")
-print("SELECTED SYMBOL: MSFT")
+print(f"SELECTED SYMBOL:{symbol}")
 print("------------------------")
 print("REQUESTING STOCK MARKET DATA...")
 print("REQUEST AT: ", datetime.datetime.now())
