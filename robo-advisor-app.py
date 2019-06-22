@@ -16,6 +16,8 @@ response = requests.get(requests_url)
 #print(type(response))
 #print(response.status_code)
 #print(response.text)
+def to_usd(price):
+    return "${0:,.2f}".format(price) 
 
 parsed_response = json.loads(response.text)
 
@@ -30,8 +32,14 @@ last_refreshed = parsed_response["Meta Data"]["3. Last Refreshed"]
 #breakpoint()
 latest_close = tsd[latest_day]["4. close"]
 
-def to_usd(price):
-    return "${0:,.2f}".format(price) 
+high_prices = []
+
+for date in dates: 
+    high_price = (tsd[latest_day]["2. high"])
+    high_prices.append(float(high_price))
+
+recent_high = max(high_prices)
+
 
 load_dotenv() #> loads contents of the .env file into the script's environment
 
@@ -46,7 +54,7 @@ print("REQUEST AT: ", datetime.datetime.now())
 print("------------------------")
 print(f"LATEST DAY: {last_refreshed}")
 print(f"LATEST CLOSE: {to_usd(float(latest_close))}")
-print("RECENT HIGH: $11111")
+print(f"RECENT HIGH: {to_usd(float(recent_high))}")
 print("RECENT LOW: $999")
 print("-----------------------")
 print("RECOMMENDATION: BUY!")
