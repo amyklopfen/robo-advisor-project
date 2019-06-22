@@ -4,6 +4,9 @@ investing = True
 import datetime
 import csv
 
+import requests 
+from urllib.request import urlopen
+
 import json
 import os
 
@@ -12,12 +15,28 @@ import requests
 
 load_dotenv() #> loads contents of the .env file into the script's environment
 
-api_key = os.environ.get("ALPHAVANTAGE_API_KEY") # default to using the "demo" key if an Env Var is not supplied
-symbol = input("Please enter a stock symbol to get started: ")
+api_key = os.environ.get("ALPHAVANTAGE_API_KEY") # pulls from .env in folder
 
-requests_url = f"https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol={symbol}&apikey={api_key}"
+#user input validation
+while investing: 
+    symbol = input("Please enter a stock symbol to get started: ") #prompts user to input stock symbol
+    requests_url = f"https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol={symbol}&apikey={api_key}"
+    response = requests.get(requests_url)
+    parsed_response = json.loads(response.text)
 
-response = requests.get(requests_url)
+    if len(symbol) > 5:
+        print("Error, please enter a valid stock symbol")
+    elif "Error Message" in parsed_response: #courtesy of Sean G.'s suggestion on slack channel
+        print("Error, please enter a valid stock symbol")
+
+    else: 
+        break 
+
+
+
+
+
+
 
 #print(type(response))
 #print(response.status_code)
@@ -25,7 +44,6 @@ response = requests.get(requests_url)
 def to_usd(price):
     return "${0:,.2f}".format(price) 
 
-parsed_response = json.loads(response.text)
 
 tsd = parsed_response["Time Series (Daily)"]
 
