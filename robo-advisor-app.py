@@ -19,10 +19,19 @@ response = requests.get(requests_url)
 
 parsed_response = json.loads(response.text)
 
+tsd = parsed_response["Time Series (Daily)"]
+
+date_keys = tsd.keys()
+dates = list(date_keys)
+
+latest_day = dates[0]
+
 last_refreshed = parsed_response["Meta Data"]["3. Last Refreshed"]
 #breakpoint()
-latest_close = parsed_response["Time Series (Daily)"]["2019-06-21"]["4. close"]
+latest_close = tsd[latest_day]["4. close"]
 
+def to_usd(price):
+    return "${0:,.2f}".format(price) 
 
 load_dotenv() #> loads contents of the .env file into the script's environment
 
@@ -36,7 +45,7 @@ print("REQUESTING STOCK MARKET DATA...")
 print("REQUEST AT: ", datetime.datetime.now())
 print("------------------------")
 print(f"LATEST DAY: {last_refreshed}")
-print(f"LATEST CLOSE: ${latest_close}")
+print(f"LATEST CLOSE: {to_usd(float(latest_close))}")
 print("RECENT HIGH: $11111")
 print("RECENT LOW: $999")
 print("-----------------------")
