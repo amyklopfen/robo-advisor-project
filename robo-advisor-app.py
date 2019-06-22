@@ -49,12 +49,19 @@ load_dotenv() #> loads contents of the .env file into the script's environment
 API_KEY = os.environ.get("ALPHAVANTAGE_API_KEY") # default to using the "demo" key if an Env Var is not supplied
 
     
+csv_file_path = os.path.join(os.path.dirname(__file__), "..", "data", "prices.csv") #modify file path with name of requested stock
+
+with open(csv_file_path, "w") as csv_file:
+    writer = csv.DictWriter(csv_file, fieldnames=[])
+
 print("------------------------")
 print("SELECTED SYMBOL: MSFT")
 print("------------------------")
 print("REQUESTING STOCK MARKET DATA...")
 print("REQUEST AT: ", datetime.datetime.now())
 print("------------------------")
+print(f"WRITING DATA TO CSV: {csv_file_path}...")
+print("--------------------------")
 print(f"LATEST DAY: {last_refreshed}")
 print(f"LATEST CLOSE: {to_usd(float(latest_close))}")
 print(f"RECENT HIGH: {to_usd(float(recent_high))}")
