@@ -33,14 +33,6 @@ while investing:
         break 
 
 
-
-
-
-
-
-#print(type(response))
-#print(response.status_code)
-#print(response.text)
 def to_usd(price):
     return "${0:,.2f}".format(price) 
 
@@ -51,6 +43,7 @@ date_keys = tsd.keys()
 dates = list(date_keys)
 
 latest_day = dates[0]
+yesterday = dates[1]
 
 last_refreshed = parsed_response["Meta Data"]["3. Last Refreshed"]
 
@@ -58,16 +51,26 @@ latest_close = tsd[latest_day]["4. close"]
 
 high_prices = []
 low_prices = []
+test_prices = []
 
 for date in dates: 
     high_price = (tsd[latest_day]["2. high"])
     high_prices.append(float(high_price))
     low_price = (tsd[latest_day]["3. low"])
     low_prices.append(float(low_price))
+    test_price = (tsd[yesterday]["4. close"])
+    test_prices.append(float(test_price))
 
 recent_high = max(high_prices)
 recent_low = min(low_prices)
+yesterday_close = max(test_prices)
 
+if float(latest_close) > float(yesterday_close): #look into this logic more
+    recommend = "BUY"
+    reason = "PRICES ARE INCREASING"
+else: 
+    recommend = "DO NOT BUY"
+    reason = "PRICES ARE DECREASING"
     
 csv_file_path = os.path.join(os.path.dirname(__file__),"data", "prices.csv") #modify file path with name of requested stock
 
@@ -93,8 +96,8 @@ print(f"LATEST CLOSE: {to_usd(float(latest_close))}")
 print(f"RECENT HIGH: {to_usd(float(recent_high))}")
 print(f"RECENT LOW: {to_usd(float(recent_low))}")
 print("-----------------------")
-print("RECOMMENDATION: BUY!")
-print("BECAUSE: TODO")
+print(f"RECOMMENDATION: {recommend}!")
+print(f"BECAUSE: {reason}")
 print("------------------------")
 print("HAPPY INVESTING!")
 print("-----------------------")
