@@ -17,27 +17,38 @@ load_dotenv() #> loads contents of the .env file into the script's environment
 
 api_key = os.environ.get("ALPHAVANTAGE_API_KEY") # pulls from .env in folder
 
-#user input validation
+#user input validation part 1
 while investing: 
     symbol = input("Please enter a stock symbol to get started: ") #prompts user to input stock symbol
+
+    if len(symbol) > 5: #ensure that the stock symbol is not longer than 5 letters
+        print("Error, please enter a properly-formed stock symbol like 'MSFT.' Please try again.")
+    elif symbol.isdigit(): #test to see whether an integer value was entered, looked up on https://pynative.com/python-check-user-input-is-number-or-string
+        print("Error, please enter a properly-formed stock symbol like 'MSFT.' Please try again.")
+    else: 
+        break 
+
+
+#user input validation part 2
+while investing: 
     requests_url = f"https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol={symbol}&apikey={api_key}"
     response = requests.get(requests_url)
     parsed_response = json.loads(response.text)
 
-    if len(symbol) > 5:
-        print("Error, please enter a valid stock symbol")
-    elif "Error Message" in parsed_response: #courtesy of Sean G.'s suggestion on slack channel
-        print("Error, please enter a valid stock symbol")
-
+    if "Error Message" in parsed_response: #courtesy of Sean G.'s suggestion on slack channel
+        print("Sorry, couldn't find any data for that stock symbol.") 
+        quit() #log out of program if requested stock does not exist
     else: 
-        break 
+        break  
+     
+
+tsd = parsed_response["Time Series (Daily)"]
 
 
 def to_usd(price):
     return "${0:,.2f}".format(price) 
 
 
-tsd = parsed_response["Time Series (Daily)"]
 
 date_keys = tsd.keys()
 dates = list(date_keys)
@@ -65,13 +76,16 @@ recent_high = max(high_prices)
 recent_low = min(low_prices)
 yesterday_close = max(test_prices)
 
-if float(latest_close) > float(yesterday_close): #look into this logic more
+if float(latest_close) / float(yesterday_close) > 1.025: #look into this logic more
     recommend = "BUY"
-    reason = "PRICES ARE INCREASING"
+    reason = "PRICES HAVE INCREASED OVER THE PAST DAY."
+elif (float(latest_close) / float(yesterday_close)) < 0.975: 
+    recommend = "SELL"
+    reason = "PRICES HAVE DECREASED OVER THE PAST DAY."
 else: 
-    recommend = "DO NOT BUY"
-    reason = "PRICES ARE DECREASING"
-    
+    recommend = "HOLD"
+    reason = "PRICES HAVE NOT CHANGED SIGNIFICANTLY. WAIT AND SEE..."
+
 csv_file_path = os.path.join(os.path.dirname(__file__),"data", "prices.csv") #modify file path with name of requested stock
 
 #csv_headers = ["timestamp", "open", "high", "low", "close", "volume"]
