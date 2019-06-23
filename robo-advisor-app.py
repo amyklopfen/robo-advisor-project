@@ -59,24 +59,21 @@ yesterday = dates[1]
 last_refreshed = parsed_response["Meta Data"]["3. Last Refreshed"]
 
 latest_close = tsd[latest_day]["4. close"]
+yesterday_close = (tsd[yesterday]["4. close"])
 
 high_prices = []
 low_prices = []
-test_prices = []
 
 for date in dates: 
     high_price = (tsd[latest_day]["2. high"])
     high_prices.append(float(high_price))
     low_price = (tsd[latest_day]["3. low"])
     low_prices.append(float(low_price))
-    test_price = (tsd[yesterday]["4. close"])
-    test_prices.append(float(test_price))
 
 recent_high = max(high_prices)
 recent_low = min(low_prices)
-yesterday_close = max(test_prices)
 
-if float(latest_close) / float(yesterday_close) > 1.025: #look into this logic more
+if float(latest_close) / float(yesterday_close) > 1.025: 
     recommend = "BUY"
     reason = "PRICES HAVE INCREASED OVER THE PAST DAY."
 elif (float(latest_close) / float(yesterday_close)) < 0.975: 
@@ -86,9 +83,8 @@ else:
     recommend = "HOLD"
     reason = "PRICES HAVE NOT CHANGED SIGNIFICANTLY. WAIT AND SEE..."
 
-csv_file_path = os.path.join(os.path.dirname(__file__),"data", "prices.csv") #modify file path with name of requested stock
+csv_file_path = os.path.join(os.path.dirname(__file__),"data", "prices.csv") 
 
-#csv_headers = ["timestamp", "open", "high", "low", "close", "volume"]
 
 with open(csv_file_path, "w") as csv_file:
     writer = csv.DictWriter(csv_file, fieldnames=["timestamp", "open", "high", "low", "close", "volume"])
